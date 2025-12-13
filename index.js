@@ -6,14 +6,16 @@ const FILE_PATH = './data.json';
 
 // Specify the dates for which you want to make multiple contributions
 const dates = [
-    '2025-11-21T11:00:00Z',
-
-   
+    '2025-12-10T11:00:00Z',
+    '2025-12-11T11:00:00Z',
+    '2025-12-12T11:00:00Z',
+    '2025-12-13T11:00:00Z',
+    '2025-12-14T11:00:00Z'
 
 ]; // Add more dates as needed
 
 // Number of contributions you want to make for each specified date
-const numContributions = 1; // Example: 2 contributions per date
+const numContributions = 5; // Example: 2 contributions per date
 
 // Initialize git
 const git = simpleGit();
