@@ -11,7 +11,6 @@ const dates = [
     '2025-12-12T11:00:00Z',
     '2025-12-13T11:00:00Z',
     '2025-12-14T11:00:00Z'
-
 ]; // Add more dates as needed
 
 // Number of contributions you want to make for each specified date
