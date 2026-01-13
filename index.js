@@ -6,15 +6,21 @@ const FILE_PATH = './data.json';
 
 // Specify the dates for which you want to make multiple contributions
 const dates = [
-    '2025-12-10T11:00:00Z',
-    '2025-12-11T11:00:00Z',
-    '2025-12-12T11:00:00Z',
-    '2025-12-13T11:00:00Z',
-    '2025-12-14T11:00:00Z'
+    '2025-12-15T11:00:00Z',
+    '2025-12-16T11:00:00Z',
+    '2025-12-17T11:00:00Z',
+    '2025-12-18T11:00:00Z',
+    '2025-12-19T11:00:00Z',
+    '2025-12-20T11:00:00Z',
+    '2025-12-21T11:00:00Z',
+    '2025-12-22T11:00:00Z',
+    '2025-12-23T11:00:00Z',
+    '2025-12-24T11:00:00Z',
+    '2025-12-25T11:00:00Z'
 ]; // Add more dates as needed
 
 // Number of contributions you want to make for each specified date
-const numContributions = 5; // Example: 2 contributions per date
+const numContributions = 4; // Example: 2 contributions per date
 
 // Initialize git
 const git = simpleGit();
@@ -33,9 +39,18 @@ function makeContribution(formattedDate, contributionNumber, callback) {
             return callback(err);
         }
 
-        // Add, commit with specific date, and push
+        // Set environment dates so both author and committer timestamps match
+        const previousAuthorDate = process.env.GIT_AUTHOR_DATE;
+        const previousCommitterDate = process.env.GIT_COMMITTER_DATE;
+        process.env.GIT_AUTHOR_DATE = formattedDate;
+        process.env.GIT_COMMITTER_DATE = formattedDate;
+
         git.add([FILE_PATH])
-            .commit(`Update date to ${formattedDate} - Contribution #${contributionNumber}`, { '--date': formattedDate }, (commitErr) => {
+            .commit(`Update date to ${formattedDate} - Contribution #${contributionNumber}`, (commitErr) => {
+                // Restore env vars regardless of commit result
+                if (previousAuthorDate === undefined) delete process.env.GIT_AUTHOR_DATE; else process.env.GIT_AUTHOR_DATE = previousAuthorDate;
+                if (previousCommitterDate === undefined) delete process.env.GIT_COMMITTER_DATE; else process.env.GIT_COMMITTER_DATE = previousCommitterDate;
+
                 if (commitErr) {
                     console.error('Error committing:', commitErr);
                     return callback(commitErr);
@@ -56,19 +71,23 @@ function makeContribution(formattedDate, contributionNumber, callback) {
 
 // Function to make multiple contributions for a specific date
 function makeMultipleContributions(date, numContributions, callback) {
-    const formattedDate = moment(date).format('YYYY-MM-DDTHH:mm:ssZ'); // Format date
     let count = 0;
 
     function next() {
         if (count < numContributions) {
+            // Add a small offset so each contribution has a unique timestamp
+            const formattedDate = moment(date).add(count, 'seconds').format('YYYY-MM-DDTHH:mm:ssZ');
             makeContribution(formattedDate, count + 1, (err) => {
                 if (!err) {
                     count++;
                     next(); // Move to the next contribution
+                } else {
+                    // If an error occurs, surface it and stop further attempts
+                    callback(err);
                 }
             });
         } else {
-            console.log(`All contributions completed for date ${formattedDate}!`);
+            console.log(`All contributions completed for date ${moment(date).format('YYYY-MM-DD')}!`);
             callback();
         }
     }
