@@ -7,12 +7,16 @@ const FILE_PATH = './data.json';
 
 // Specify the dates for which you want to make multiple contributions
 const dates = [
-    '2025-12-22T11:00:00Z',
-    '2025-12-23T11:00:00Z',
-    '2025-12-24T11:00:00Z',
-    '2025-12-25T11:00:00Z',
-    '2025-12-26T11:00:00Z',
-    '2025-12-27T11:00:00Z'
+    '2026-01-01T11:00:00Z',
+    '2026-01-02T11:00:00Z',
+    '2026-01-03T11:00:00Z',
+    '2026-01-04T11:00:00Z',
+    '2026-01-05T11:00:00Z',
+    '2026-01-06T11:00:00Z',
+    '2026-01-07T11:00:00Z',
+    '2026-01-08T11:00:00Z',
+    '2026-01-09T11:00:00Z',
+    '2026-01-10T11:00:00Z'
 ]; // Add more dates as needed
 
 // Number of contributions you want to make for each specified date
