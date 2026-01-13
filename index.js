@@ -1,18 +1,18 @@
 const jsonfile = require('jsonfile');
 const moment = require('moment');
 const simpleGit = require('simple-git');
+const { execSync } = require('child_process');
 
 const FILE_PATH = './data.json';
 
 // Specify the dates for which you want to make multiple contributions
 const dates = [
-    '2025-12-15T11:00:00Z',
-    '2025-12-16T11:00:00Z',
-    '2025-12-17T11:00:00Z',
-    '2025-12-18T11:00:00Z',
-    '2025-12-19T11:00:00Z',
-    '2025-12-20T11:00:00Z',
-    '2025-12-21T11:00:00Z'
+    '2025-12-22T11:00:00Z',
+    '2025-12-23T11:00:00Z',
+    '2025-12-24T11:00:00Z',
+    '2025-12-25T11:00:00Z',
+    '2025-12-26T11:00:00Z',
+    '2025-12-27T11:00:00Z'
 ]; // Add more dates as needed
 
 // Number of contributions you want to make for each specified date
@@ -38,14 +38,39 @@ function makeContribution(formattedDate, contributionNumber, callback) {
         // Set environment dates so both author and committer timestamps match
         const previousAuthorDate = process.env.GIT_AUTHOR_DATE;
         const previousCommitterDate = process.env.GIT_COMMITTER_DATE;
+        const previousAuthorName = process.env.GIT_AUTHOR_NAME;
+        const previousAuthorEmail = process.env.GIT_AUTHOR_EMAIL;
+        const previousCommitterName = process.env.GIT_COMMITTER_NAME;
+        const previousCommitterEmail = process.env.GIT_COMMITTER_EMAIL;
+
         process.env.GIT_AUTHOR_DATE = formattedDate;
         process.env.GIT_COMMITTER_DATE = formattedDate;
+
+        // Attempt to read git config and set author/committer identity so GitHub attributes contributions
+        try {
+            const name = execSync('git config user.name').toString().trim();
+            const email = execSync('git config user.email').toString().trim();
+            if (name) {
+                process.env.GIT_AUTHOR_NAME = name;
+                process.env.GIT_COMMITTER_NAME = name;
+            }
+            if (email) {
+                process.env.GIT_AUTHOR_EMAIL = email;
+                process.env.GIT_COMMITTER_EMAIL = email;
+            }
+        } catch (e) {
+            // ignore if git config not set
+        }
 
         git.add([FILE_PATH])
             .commit(`Update date to ${formattedDate} - Contribution #${contributionNumber}`, (commitErr) => {
                 // Restore env vars regardless of commit result
                 if (previousAuthorDate === undefined) delete process.env.GIT_AUTHOR_DATE; else process.env.GIT_AUTHOR_DATE = previousAuthorDate;
                 if (previousCommitterDate === undefined) delete process.env.GIT_COMMITTER_DATE; else process.env.GIT_COMMITTER_DATE = previousCommitterDate;
+                if (previousAuthorName === undefined) delete process.env.GIT_AUTHOR_NAME; else process.env.GIT_AUTHOR_NAME = previousAuthorName;
+                if (previousAuthorEmail === undefined) delete process.env.GIT_AUTHOR_EMAIL; else process.env.GIT_AUTHOR_EMAIL = previousAuthorEmail;
+                if (previousCommitterName === undefined) delete process.env.GIT_COMMITTER_NAME; else process.env.GIT_COMMITTER_NAME = previousCommitterName;
+                if (previousCommitterEmail === undefined) delete process.env.GIT_COMMITTER_EMAIL; else process.env.GIT_COMMITTER_EMAIL = previousCommitterEmail;
 
                 if (commitErr) {
                     console.error('Error committing:', commitErr);
